@@ -11,8 +11,6 @@ struct Color {
     blue: u8,
 }
 
-// I AM NOT DONE
-
 // Your task is to complete this implementation
 // and return an Ok result of inner type Color.
 // You need to create an implementation for a tuple of three integers,
@@ -22,22 +20,41 @@ struct Color {
 // but the slice implementation needs to check the slice length!
 // Also note that correct RGB color values must be integers in the 0..=255 range.
 
+fn vals_to_color(red: i16, green: i16, blue: i16) -> Result<Color, String>{
+    return match (u8::try_from(red), u8::try_from(green), u8::try_from(blue)) {
+        (Ok(r), Ok(g), Ok(b)) => Ok(Color{red: r, green: g, blue: b}),
+        _ => Err(String::from(format!("Invalid value(s): {},{},{}", red, green, blue)))
+    };
+}
+
 // Tuple implementation
 impl TryFrom<(i16, i16, i16)> for Color {
     type Error = String;
-    fn try_from(tuple: (i16, i16, i16)) -> Result<Self, Self::Error> {}
+    fn try_from(tuple: (i16, i16, i16)) -> Result<Self, Self::Error> {
+        let (red, green, blue) = tuple;
+        vals_to_color(red, green, blue)
+    }
 }
 
 // Array implementation
 impl TryFrom<[i16; 3]> for Color {
     type Error = String;
-    fn try_from(arr: [i16; 3]) -> Result<Self, Self::Error> {}
+    fn try_from(arr: [i16; 3]) -> Result<Self, Self::Error> {
+        let [red, green, blue] = arr;
+        vals_to_color(red, green, blue)
+    }
 }
 
 // Slice implementation
 impl TryFrom<&[i16]> for Color {
     type Error = String;
-    fn try_from(slice: &[i16]) -> Result<Self, Self::Error> {}
+    fn try_from(slice: &[i16]) -> Result<Self, Self::Error> {
+        if slice.len() != 3 {
+            return Err(Self::Error::from(format!("Invalid arg length, need 3 values: {}", slice.len())));
+        }
+        let (red, green, blue) = (slice[0], slice[1], slice[2]);
+        vals_to_color(red, green, blue)
+    }
 }
 
 fn main() {
